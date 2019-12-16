@@ -31,19 +31,35 @@ import email
 import imaplib
 import pandas as pd
 from googlesearch import *
+import pyttsx3
+
+'''
+engine = pyttsx3.init()
+sound = engine.getProperty('voices')
+engine.setProperty('voice', sound[32].id)
+engine.say("hello I am the first test case")
+engine.runAndWait()
+'''
 
 def botResponse(audio):
     "speaks audio passed as argument"
     print(audio)
+    engine = pyttsx3.init()
+    sound = engine.getProperty('voices')
+    engine.setProperty('voice', sound[33].id) #10 17 18 28 32 33 36 37 40
+    #engine.say("hello I am the first test case")
+   
     for line in audio.splitlines():
-        os.system("say " + audio)
-
-
+        #os.system("say " + audio)
+        engine.say(audio)
+    engine.runAndWait()
+        
+        
 def myCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        botResponse("How can I help you now?")
-        r.pause_treshold = 1
+        #print("How can I help you now?")
+        #r.pause_treshold = 1
         r.adjust_for_ambient_noise(source, duration = 1)
         audio = r.listen(source)
     try:
@@ -51,9 +67,27 @@ def myCommand():
         print("you said: "+ command + "\n")
         
     except sr.UnknownValueError:
-        print("Sorry, Cant understand, Pls say again")
+        botResponse("Sorry, Cant understand, Please say again")
         command = myCommand()
     return command
+    '''
+    q = sr.Recognizer()
+    t = 0
+    with sr.Microphone() as source:
+        print("How can I help you now?")
+        while t==0:
+            audio = q.listen(source)
+            try:
+                command = q.recognize_google(audio)
+                print('you said :{}'.format(text))
+                #print("you said: "+command+"\n")
+                t=1
+            except:
+               botResponse("Sorry, Cant understand, Please say again")
+               t==0
+               command = myCommand();
+    return command
+    '''
 
 def assistant(command):
     "if statements for executing commands"
@@ -61,11 +95,11 @@ def assistant(command):
     if 'hello' in command:
             day_time = int(strftime('%H'))
             if day_time < 12:
-                botResponse('Hello Good morning, Sir')
+                botResponse('Hello, Good morning, Sir')
             elif 12 <= day_time < 18:
-                botResponse('Hello Good afternoon, Sir')
+                botResponse('Hello, Good afternoon, Sir')
             else:
-                botResponse('Hello Good evening, Sir')
+                botResponse('Hello, Good evening, Sir')
     
     #opening a webpage
     elif 'open' in command:
@@ -140,27 +174,40 @@ def assistant(command):
 
     #opening the desired application in the Mac
     elif 'launch' in command:
-        reg_ex = re.search('launch(.*)', command)
+        reg_ex = re.search('launch (.*)', command)
         if reg_ex:
             appname = reg_ex.group(1)
             appname1 = appname+".app"
-            subprocess.call(["open","-n","/Applications"+appname1], stdout=subprocess.PIPE)
-            botResponse("I have opened the application")
+            subprocess.Popen(["open", "-n", "/Applications/" + appname1], stdout=subprocess.PIPE)
+            botResponse('I have launched the desired application')
         else:
             botResponse('The applicaton does not exixst')
         
     # to tell you the temprature of a perticular city
     elif 'current weather' in command:
-         reg_ex = re.search('current weather in (.*)', command)
-         if reg_ex:
-             city = reg_ex.group(1)
-             owm = OWM(API_key='221642e84fc28ddb1c3172447bbf1a39')
-             obs = owm.weather_at_place(city)
-             w = obs.get_weather()
-             k = w.get_status()
-             x = w.get_temperature(unit='celsius')
-             botResponse('Current weather in %s is %s. The maximum temperature is %0.2f and the minimum temperature is %0.2f degree celcius' % (city, k, x['temp_max'], x['temp_min']))
-             
+        reg_ex = re.search('current weather in (.*)', command)
+        if reg_ex:
+            '''
+            city = reg_ex.group(1)
+            owm = OWM(API_key='221642e84fc28ddb1c3172447bbf1a39')
+            obs = owm.weather_at_place(city)
+            w = obs.get_weather()
+            k = w.get_status()
+            x = w.get_temperature(unit='celsius')
+            botResponse('Current weather in %s is %s. The maximum temperature is %0.2f and the minimum temperature is %0.2f degree celcius' % (city, k, x['temp_max'], x['temp_min']))
+            '''
+            city=reg_ex.group(1)
+            url="https://api.openweathermap.org/data/2.5/forecast?q=Delhi&appid=221642e84fc28ddb1c3172447bbf1a39&units=metric"
+            res=requests.get(url)
+            output=res.json()
+
+            weather_status=output['weather'][0]['description']
+            temprature=output['main']['temp']
+            #humidity=output['main']['humidity']
+            #wind_speed=output['wind']['speed']
+            botResponse('Current weather stauts is' + weather_status)
+            botResponse('Current temparture is ' + str(temparture))
+
     #tells you the information availabe in net
     elif 'tell me about' in command:
         reg_ex = re.search('tell me about (.*)', command)
@@ -226,8 +273,18 @@ def assistant(command):
                 p = subprocess.Popen(path)
                 if flag == 0:
                     botResponse('I have not found anything in Youtube ')
-                    
-                    
+                else:
+                    pass
+    #tell you a joke
+    elif 'joke' in command:
+        res = requests.get(
+               'https://icanhazdadjoke.com/',
+                headers={"Accept":"application/json"})
+        if res.status_code == requests.codes.ok:
+            botResponse(str(res.json()['joke']))
+        else:       
+            botResponse('Oops! I ran out of jokes')
+
     #read the news
     elif 'news for today' in command:
             try:
@@ -247,16 +304,16 @@ def assistant(command):
         botResponse('What to search?')
         #myCommand()
 
-        q=sr.Recognizer()
+        w=sr.Recognizer()
         t=0
 
         with sr.Microphone() as source:
             print('Search for the term:')
             
             while t==0:
-                audio =q.listen(source)
+                audio = w.listen(source)
                 try:
-                    text =q.recognize_google(audio)
+                    text =w.recognize_google(audio)
                     print('you said :{}'.format(text))
                     t=1
 
@@ -273,8 +330,8 @@ def assistant(command):
             
     #to terminate the program
     elif 'bye' in command:
-         botResponse('Bye bye Sir. Have a nice day')
-         sys.exit()
+        botResponse('Bye bye Sir. Have a nice day')
+        sys.exit()
        
 '''         
 day_time = int(strftime('%H'))
@@ -286,6 +343,7 @@ else:
     botResponse('Hello Good evening, Sir')
 '''
 botResponse('Hello, I am the Voice assistant created by Harshit Ruwali')
+botResponse('How can I help you?')
 
 while True:
     assistant(myCommand())
