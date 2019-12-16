@@ -24,7 +24,6 @@ import urllib
 #import urllib2
 import urllib.request as urllib2
 from urllib.request import urlopen
-from time import strftime
 from pyowm import OWM
 import subprocess
 import email
