@@ -16,7 +16,7 @@ import youtube_dl
 import wikipedia
 import smtplib
 from time import strftime
-import random
+#import random
 import requests
 import json as simplejson
 from bs4 import BeautifulSoup as soup
@@ -24,7 +24,6 @@ import urllib
 #import urllib2
 import urllib.request as urllib2
 from urllib.request import urlopen
-from time import strftime
 from pyowm import OWM
 import subprocess
 import email
@@ -32,6 +31,7 @@ import imaplib
 import pandas as pd
 from googlesearch import *
 import pyttsx3
+import wolframalpha
 
 '''
 engine = pyttsx3.init()
@@ -60,8 +60,9 @@ def myCommand():
     with sr.Microphone() as source:
         #print("How can I help you now?")
         #r.pause_treshold = 1
-        r.adjust_for_ambient_noise(source, duration = 1)
-        audio = r.listen(source)
+        #r.adjust_for_ambient_noise(source, duration = 1) # duration was earlier 1
+        #audio = r.listen(source)
+        audio = r.listen(source, phrase_time_limit = 5)  
     try:
         command = r.recognize_google(audio).lower()
         print("you said: "+ command + "\n")
@@ -100,7 +101,11 @@ def assistant(command):
                 botResponse('Hello, Good afternoon, Sir')
             else:
                 botResponse('Hello, Good evening, Sir')
-    
+
+    #asking when you were created?         
+    elif 'created' in command:
+        botResponse('I was created on 15 December 2019 in the room of VIT  Bhopal University')
+
     #opening a webpage
     elif 'open' in command:
         reg_ex = re.search('open (.+)', command)
@@ -112,12 +117,16 @@ def assistant(command):
             botResponse("Opening " + domain)
         else:
             pass
+
+    #how are you
+    elif 'how are you' in command:
+        botResponse('I am great. Hoping the same for you.')   
         
     #telling you the current time 
     elif 'time' in command:
-         import datetime
-         now = datetime.datetime.now()
-         botResponse('Current time is %d hours %d minutes' % (now.hour, now.minute))
+        import datetime
+        now = datetime.datetime.now()
+        botResponse('Current time is %d hours %d minutes' % (now.hour, now.minute))
          
     
     #reading an email
@@ -195,18 +204,25 @@ def assistant(command):
             k = w.get_status()
             x = w.get_temperature(unit='celsius')
             botResponse('Current weather in %s is %s. The maximum temperature is %0.2f and the minimum temperature is %0.2f degree celcius' % (city, k, x['temp_max'], x['temp_min']))
-            '''
+
             city=reg_ex.group(1)
             url="https://api.openweathermap.org/data/2.5/forecast?q=Delhi&appid=221642e84fc28ddb1c3172447bbf1a39&units=metric"
             res=requests.get(url)
             output=res.json()
+            '''
+            city = reg_ex.group(1)
+            
+            url ='http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&cnt=3'%city
+            response = requests.get(url)
+            response.raise_for_status()
 
             weather_status=output['weather'][0]['description']
             temprature=output['main']['temp']
+            output = response.json()
             #humidity=output['main']['humidity']
             #wind_speed=output['wind']['speed']
             botResponse('Current weather stauts is' + weather_status)
-            botResponse('Current temparture is ' + str(temparture))
+            botResponse('Current temparture is ' + str(temprature))
 
     #tells you the information availabe in net
     elif 'tell me about' in command:
@@ -270,7 +286,7 @@ def assistant(command):
                 os.chdir(path)
                 with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([url])
-                p = subprocess.Popen(path)
+                    subprocess.Popen(path)
                 if flag == 0:
                     botResponse('I have not found anything in Youtube ')
                 else:
@@ -298,7 +314,18 @@ def assistant(command):
                     botResponse(news.title.text.encode('utf-8'))
             except Exception as e:
                     print(e)
-    
+
+    elif "calculate" in command:    
+            # write your wolframalpha app_id here 
+            app_id = "9Q8RQA-XK2UTE7ALR" 
+            client = wolframalpha.Client(app_id) 
+  
+            indx = input.lower().split().index('calculate') 
+            query = input.split()[indx + 1:] 
+            res = client.query(' '.join(query)) 
+            answer = next(res.results).text 
+            botResponse('The answer is ' + answer) 
+
     #does a google search
     elif 'search' in command:
         botResponse('What to search?')
@@ -342,8 +369,7 @@ elif 12 <= day_time < 18:
 else:
     botResponse('Hello Good evening, Sir')
 '''
-botResponse('Hello, I am the Voice assistant created by Harshit Ruwali')
-botResponse('How can I help you?')
+botResponse('Hello, I am the Voice assistant created by Harshit Ruwali. How can I help you?')
 
 while True:
     assistant(myCommand())
