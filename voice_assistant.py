@@ -129,15 +129,6 @@ def assistant(command):
     elif 'How do you function' in command:
         botResponse('I am working by the program written by Harshit Ruwali')
 
-    elif 'fuck off' or 'fuck you' in command:
-        botResponse('Fuck you too. Mother FUCKER.')
-    elif 'yash saxena' in command:
-        botResponse('YASH Saxena is a son of a BITCH. MOTHER-FUCKER')
-    elif '149' in command:
-        botResponse('The room of Vineet, he is an asshole')
-    elif 'vineet' in command:
-        botResponse('He is an total asshole, MOTHER-FUCKER')
-
         
     #telling you the current time 
     elif 'time' in command:
