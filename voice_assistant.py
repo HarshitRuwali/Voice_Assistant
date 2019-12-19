@@ -407,7 +407,7 @@ trainer.export_for_training('./science.yml')
 trainer.export_for_training('./sports.yml')
 trainer.export_for_training('./trivia.yml')
 
-print('traing is finished')
+print('Finished training')
 
 
 botResponse('Hello, I am the Voice assistant created by Harshit Ruwali. How can I help you?')
