@@ -371,7 +371,7 @@ def assistant(command):
 
     else:
         response = chatbot.get_response(command)
-        botResponse('response')
+        botResponse(response)
 
         
        
