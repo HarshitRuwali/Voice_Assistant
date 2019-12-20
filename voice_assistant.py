@@ -53,7 +53,7 @@ def botResponse(audio):
     engine.setProperty('voice', sound[33].id) #10 17 18 28 32 33 36 37 40
     #engine.say("hello I am the first test case")
    
-    for line in audio.splitlines():
+    for line in str(audio).splitlines():
         #os.system("say " + audio)
         engine.say(audio)
     engine.runAndWait()
