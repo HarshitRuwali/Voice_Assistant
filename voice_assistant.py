@@ -385,6 +385,7 @@ else:
     botResponse('Hello Good evening, Sir')
 '''
 chatbot = ChatBot('Lindy')
+
 trainer = ChatterBotCorpusTrainer(chatbot)
 trainer.train("chatterbot.corpus.english")
 trainer.export_for_training('./ai.yml')
