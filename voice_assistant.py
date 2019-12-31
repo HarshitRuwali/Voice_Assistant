@@ -34,6 +34,7 @@ import pyttsx3
 import wolframalpha
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
+from chatterbot.trainers import ListTrainer
 
 
 
@@ -370,9 +371,8 @@ def assistant(command):
         sys.exit()
 
     else:
-        response = chatbot.get_response(command)
+        response = bot.get_response(command)
         botResponse(response)
-
         
        
 '''         
@@ -384,32 +384,8 @@ elif 12 <= day_time < 18:
 else:
     botResponse('Hello Good evening, Sir')
 '''
-chatbot = ChatBot('Lindy')
-
-trainer = ChatterBotCorpusTrainer(chatbot)
-trainer.train("chatterbot.corpus.english")
-trainer.export_for_training('./ai.yml')
-trainer.export_for_training('./botprofile.yml')
-trainer.export_for_training('./computers.yml')
-trainer.export_for_training('./conversations.yml')
-trainer.export_for_training('./emotion.yml')
-trainer.export_for_training('./food.yml')
-trainer.export_for_training('./gossip.yml')
-trainer.export_for_training('./greetings.yml')
-trainer.export_for_training('./health.yml')
-trainer.export_for_training('./history.yml')
-trainer.export_for_training('./humor.yml')
-trainer.export_for_training('./literature.yml')
-trainer.export_for_training('./money.yml')
-trainer.export_for_training('./movies.yml')
-trainer.export_for_training('./politics.yml')
-trainer.export_for_training('./psychology.yml')
-trainer.export_for_training('./science.yml')
-trainer.export_for_training('./sports.yml')
-trainer.export_for_training('./trivia.yml')
-
-print('Finished training')
-
+bot = ChatBot('Lindy')
+trainer = ChatterBotCorpusTrainer(bot)
 
 botResponse('Hello, I am the Voice assistant created by Harshit Ruwali. How can I help you?')
 
